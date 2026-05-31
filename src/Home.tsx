@@ -249,7 +249,6 @@ const iconStyle: React.CSSProperties = {
 const cardLabelStyle: React.CSSProperties = {
   fontFamily: '"Courier New", monospace',
   fontSize: 16,
-  fontSize: 13,
   fontWeight: "bold",
   color: "#fff",
   textShadow: "1px 1px 0 #000, 2px 2px 0 rgba(0,0,0,0.3)",
