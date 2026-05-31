@@ -18,7 +18,7 @@ const GAMES: GameEntry[] = [
   {
     label: "SPACE BATTLE",
     icon: "🚀",
-    route: "/grayson-games/space-battle",
+    route: "/space-battle",
     color: "#e83020",
   },
 ];
