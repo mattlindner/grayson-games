@@ -31,7 +31,7 @@ export default function SpaceBattle() {
   }, []);
 
   const handleHome = useCallback(() => {
-    navigate("/grayson-games/");
+    navigate("/");
   }, [navigate]);
 
   return (
