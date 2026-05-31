@@ -939,10 +939,10 @@ export default function Game({ onRestart, onHome, character }: GameProps) {
             onMouseLeave={onFireEnd}
             style={{
               ...dpadStyle,
-              width: 100,
+              width: 140,
               background: "#cc2200",
               color: "#fff",
-              fontSize: 18,
+              fontSize: 24,
               fontFamily: '"Courier New", monospace',
               borderColor: "#ff4422",
             }}
@@ -957,9 +957,9 @@ export default function Game({ onRestart, onHome, character }: GameProps) {
 }
 
 const dpadStyle: React.CSSProperties = {
-  width: 64,
-  height: 64,
-  fontSize: 28,
+  width: 88,
+  height: 88,
+  fontSize: 36,
   background: "#222",
   color: "#888",
   border: "2px solid #444",

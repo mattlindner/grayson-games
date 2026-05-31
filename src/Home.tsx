@@ -186,7 +186,7 @@ const titleStyle: React.CSSProperties = {
 
 const titleMainStyle: React.CSSProperties = {
   fontFamily: '"Courier New", monospace',
-  fontSize: "clamp(36px, 9vw, 64px)",
+  fontSize: "clamp(48px, 12vw, 80px)",
   fontWeight: "bold",
   color: "#ffe040",
   textShadow:
@@ -197,7 +197,7 @@ const titleMainStyle: React.CSSProperties = {
 
 const titleSubStyle: React.CSSProperties = {
   fontFamily: '"Courier New", monospace',
-  fontSize: "clamp(20px, 5vw, 36px)",
+  fontSize: "clamp(28px, 7vw, 48px)",
   fontWeight: "bold",
   color: "#fff",
   textShadow:
@@ -210,14 +210,14 @@ const gridStyle: React.CSSProperties = {
   display: "flex",
   flexWrap: "wrap",
   justifyContent: "center",
-  gap: 20,
-  maxWidth: 400,
+  gap: 24,
+  maxWidth: 560,
   width: "100%",
 };
 
 const cardStyle: React.CSSProperties = {
-  width: 170,
-  padding: "20px 14px 16px",
+  width: 240,
+  padding: "28px 20px 22px",
   background: "rgba(0, 0, 0, 0.25)",
   border: "3px solid #ffe040",
   borderRadius: 16,
@@ -231,8 +231,8 @@ const cardStyle: React.CSSProperties = {
 };
 
 const nodeCircleStyle: React.CSSProperties = {
-  width: 64,
-  height: 64,
+  width: 96,
+  height: 96,
   borderRadius: "50%",
   background: "radial-gradient(circle at 35% 35%, #ffe870, #d0a000)",
   border: "3px solid #fff",
@@ -243,11 +243,12 @@ const nodeCircleStyle: React.CSSProperties = {
 };
 
 const iconStyle: React.CSSProperties = {
-  fontSize: 32,
+  fontSize: 48,
 };
 
 const cardLabelStyle: React.CSSProperties = {
   fontFamily: '"Courier New", monospace',
+  fontSize: 16,
   fontSize: 13,
   fontWeight: "bold",
   color: "#fff",
