@@ -744,35 +744,36 @@ export default function Game({ onRestart, onHome, character }: GameProps) {
       }
 
       // HUD
-      // Hearts
-      for (let i = 0; i < MAX_HEARTS; i++) {
-        if (i < s.hearts) {
-          drawHeart(ctx, 10 + i * 22, 10);
-        } else {
-          ctx.fillStyle = "#333";
-          ctx.fillRect(10 + i * 22 + 2, 2, 12, 12);
+      // Hearts (below player ship, move with player)
+      if (!s.gameOver) {
+        const heartsW = (MAX_HEARTS - 1) * 22 + 14;
+        const heartsX = s.player.x + PLAYER_W / 2 - heartsW / 2;
+        const heartsY = s.player.y + PLAYER_H + 6;
+        for (let i = 0; i < MAX_HEARTS; i++) {
+          if (i < s.hearts) {
+            drawHeart(ctx, heartsX + i * 22, heartsY);
+          } else {
+            ctx.fillStyle = "#333";
+            ctx.fillRect(heartsX + i * 22 + 2, heartsY + 2, 12, 12);
+          }
         }
       }
 
-      // Score
+      // Level (top row, centered)
       ctx.fillStyle = "#ffffff";
-      ctx.font = '16px "Courier New", monospace';
-      ctx.textAlign = "right";
-      ctx.fillText(`SCORE: ${s.score}`, CANVAS_W - 10, 22);
-
-      // Level
+      ctx.font = 'bold 26px "Courier New", monospace';
       ctx.textAlign = "center";
-      ctx.fillText(`LEVEL ${s.level}`, CANVAS_W / 2, 22);
+      ctx.fillText(`LEVEL ${s.level}`, CANVAS_W / 2, 26);
 
-      // Enemies remaining
-      ctx.fillStyle = "#666";
-      ctx.font = '11px "Courier New", monospace';
+      // Enemies remaining (second row, left)
       const remaining = s.enemies.filter((e) => e.alive).length;
-      ctx.fillText(
-        `${remaining} enemies left`,
-        CANVAS_W / 2,
-        38
-      );
+      ctx.font = 'bold 22px "Courier New", monospace';
+      ctx.textAlign = "left";
+      ctx.fillText(`${remaining} ENEMIES LEFT`, 10, 52);
+
+      // Score (second row, right)
+      ctx.textAlign = "right";
+      ctx.fillText(`SCORE: ${s.score}`, CANVAS_W - 10, 52);
 
       // Game Over
       if (s.gameOver) {
