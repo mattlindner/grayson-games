@@ -393,10 +393,12 @@ function drawHeart(ctx: CanvasRenderingContext2D, x: number, y: number) {
 /** Props accepted by the {@link Game} component. */
 interface GameProps {
   /**
-   * Callback invoked when the player chooses to return to the main
-   * menu / loading screen after a game-over.
+   * Callback invoked when the player chooses to return to the
+   * loading / character-select screen after a game-over.
    */
   onRestart: () => void;
+  /** Callback to navigate back to the home page (game list). */
+  onHome: () => void;
   /** The selected player character, determines ship appearance. */
   character: Character;
 }
@@ -412,7 +414,7 @@ interface GameProps {
  * @param props - {@link GameProps}
  * @returns The game canvas and (optionally) mobile controls / game-over buttons.
  */
-export default function Game({ onRestart, character }: GameProps) {
+export default function Game({ onRestart, onHome, character }: GameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef<GameState | null>(null);
   const keysRef = useRef<Set<string>>(new Set());
@@ -885,6 +887,9 @@ export default function Game({ onRestart, character }: GameProps) {
             </button>
             <button onClick={onRestart} style={btnStyle}>
               MAIN MENU
+            </button>
+            <button onClick={onHome} style={btnStyle}>
+              HOME
             </button>
           </div>
         )}
