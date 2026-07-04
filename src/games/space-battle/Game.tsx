@@ -948,7 +948,7 @@ export default function Game({ onRestart, onHome, character }: GameProps) {
               borderColor: "#ff4422",
             }}
           >
-            GRAY
+            TARGET
           </button>
         </div>
       )}
