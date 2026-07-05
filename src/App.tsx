@@ -10,6 +10,7 @@
 import { HashRouter, Routes, Route } from "react-router-dom";
 import Home from "./Home";
 import SpaceBattle from "./games/space-battle";
+import NumberMunchers from "./games/number-munchers";
 
 /**
  * Root application component with hash-based client-side routing.
@@ -20,6 +21,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/space-battle" element={<SpaceBattle />} />
+        <Route path="/number-munchers" element={<NumberMunchers />} />
       </Routes>
     </HashRouter>
   );

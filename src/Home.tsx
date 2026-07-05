@@ -21,6 +21,12 @@ const GAMES: GameEntry[] = [
     route: "/space-battle",
     color: "#e83020",
   },
+  {
+    label: "NUMBER MUNCHERS",
+    icon: "🔢",
+    route: "/number-munchers",
+    color: "#2fbf2f",
+  },
 ];
 
 /** Draws the scrolling hill / sky background onto a canvas. */
