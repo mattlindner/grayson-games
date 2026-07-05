@@ -12,7 +12,7 @@
  *
  * Controls:
  * - Desktop: Arrow keys / WASD to move, Space or Enter to eat.
- * - Mobile: on-screen joystick (bottom-left) + EAT button (bottom-right).
+ * - Mobile: on-screen D-pad (bottom-left) + EAT button (bottom-right).
  *
  * The player is drawn with a {@link CharacterFace} whose jaw flaps like
  * "Terrance and Phillip" while chewing. The face is built from swappable
@@ -285,12 +285,6 @@ export default function Game({ character, onRestart, onHome }: GameProps) {
   const isMobileRef = useRef(false);
   const cellSizeRef = useRef(64);
 
-  // Joystick state.
-  const joyActiveRef = useRef(false);
-  const joyDirRef = useRef<{ dr: number; dc: number } | null>(null);
-  const joyBaseRef = useRef<HTMLDivElement>(null);
-  const knobRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-
   // ── Core actions (stable; read/write refs only) ──
 
   const loadLevel = useCallback((idx: number) => {
@@ -516,59 +510,11 @@ export default function Game({ character, onRestart, onHome }: GameProps) {
     return () => window.clearInterval(id);
   }, [moveEnemies]);
 
-  // ── Joystick repeat loop ──
-  useEffect(() => {
-    const id = window.setInterval(() => {
-      const d = joyDirRef.current;
-      if (d && phaseRef.current === "playing") move(d.dr, d.dc);
-    }, 180);
-    return () => window.clearInterval(id);
-  }, [move]);
-
-  // ── Joystick pointer handling ──
-  const updateJoy = (e: React.PointerEvent) => {
-    const base = joyBaseRef.current;
-    if (!base) return;
-    const rect = base.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const dx = e.clientX - cx;
-    const dy = e.clientY - cy;
-    const radius = rect.width / 2 - 8;
-    const dist = Math.hypot(dx, dy);
-    const clamped = Math.min(dist, radius);
-    const angle = Math.atan2(dy, dx);
-    knobRef.current = {
-      x: Math.cos(angle) * clamped,
-      y: Math.sin(angle) * clamped,
-    };
-    if (dist > 14) {
-      if (Math.abs(dx) > Math.abs(dy)) {
-        joyDirRef.current = { dr: 0, dc: dx > 0 ? 1 : -1 };
-      } else {
-        joyDirRef.current = { dr: dy > 0 ? 1 : -1, dc: 0 };
-      }
-    } else {
-      joyDirRef.current = null;
-    }
-    rerender();
-  };
-
-  const onJoyDown = (e: React.PointerEvent) => {
-    e.currentTarget.setPointerCapture(e.pointerId);
+  // ── D-pad pointer handling (one step per press) ──
+  const onPadStart = (dr: number, dc: number) => (e: React.PointerEvent) => {
+    e.preventDefault();
     initAudio();
-    joyActiveRef.current = true;
-    updateJoy(e);
-  };
-  const onJoyMove = (e: React.PointerEvent) => {
-    if (!joyActiveRef.current) return;
-    updateJoy(e);
-  };
-  const onJoyUp = () => {
-    joyActiveRef.current = false;
-    joyDirRef.current = null;
-    knobRef.current = { x: 0, y: 0 };
-    rerender();
+    move(dr, dc);
   };
 
   const onEatDown = (e: React.PointerEvent) => {
@@ -630,6 +576,7 @@ export default function Game({ character, onRestart, onHome }: GameProps) {
           ref={instrRef}
           style={{
             display: "inline-block",
+            flexShrink: 0,
             whiteSpace: "nowrap",
             transform: `scale(${instrScale})`,
             transformOrigin: "center",
@@ -790,21 +737,33 @@ export default function Game({ character, onRestart, onHome }: GameProps) {
       {/* Mobile controls */}
       {isMobile && (
         <div style={{ ...mobileControlsStyle, width: cellSize * COLS }}>
-          {/* Joystick */}
-          <div
-            ref={joyBaseRef}
-            onPointerDown={onJoyDown}
-            onPointerMove={onJoyMove}
-            onPointerUp={onJoyUp}
-            onPointerCancel={onJoyUp}
-            style={joyBaseStyle}
-          >
-            <div
-              style={{
-                ...joyKnobStyle,
-                transform: `translate(${knobRef.current.x}px, ${knobRef.current.y}px)`,
-              }}
-            />
+          {/* D-pad */}
+          <div style={dpadGridStyle}>
+            <button
+              style={{ ...dpadBtnStyle, gridArea: "up" }}
+              onPointerDown={onPadStart(-1, 0)}
+            >
+              ▲
+            </button>
+            <button
+              style={{ ...dpadBtnStyle, gridArea: "left" }}
+              onPointerDown={onPadStart(0, -1)}
+            >
+              ◀
+            </button>
+            <div style={dpadCenterStyle} />
+            <button
+              style={{ ...dpadBtnStyle, gridArea: "right" }}
+              onPointerDown={onPadStart(0, 1)}
+            >
+              ▶
+            </button>
+            <button
+              style={{ ...dpadBtnStyle, gridArea: "down" }}
+              onPointerDown={onPadStart(1, 0)}
+            >
+              ▼
+            </button>
           </div>
 
           {/* EAT button */}
@@ -862,7 +821,9 @@ const instructionStyle: React.CSSProperties = {
   fontWeight: "bold",
   fontSize: "clamp(22px, 6vw, 40px)",
   color: "#ffe040",
-  textAlign: "center",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
   textShadow: "0 2px 3px #000",
   letterSpacing: 1,
   lineHeight: 1.1,
@@ -939,26 +900,39 @@ const mobileControlsStyle: React.CSSProperties = {
   boxSizing: "border-box",
 };
 
-const joyBaseStyle: React.CSSProperties = {
-  width: 120,
-  height: 120,
-  borderRadius: "50%",
+const dpadGridStyle: React.CSSProperties = {
+  display: "grid",
+  gridTemplateAreas: `". up ." "left center right" ". down ."`,
+  gridTemplateColumns: "44px 44px 44px",
+  gridTemplateRows: "44px 44px 44px",
+  gap: 4,
+  touchAction: "none",
+};
+
+const dpadBtnStyle: React.CSSProperties = {
+  width: 44,
+  height: 44,
+  fontSize: 20,
+  color: "#cfe",
   background: "radial-gradient(circle at 50% 40%, #263056, #121734)",
-  border: "3px solid #2b6",
-  position: "relative",
+  border: "2px solid #2b6",
+  borderRadius: 8,
+  cursor: "pointer",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   touchAction: "none",
+  userSelect: "none",
+  WebkitUserSelect: "none",
 };
 
-const joyKnobStyle: React.CSSProperties = {
-  width: 52,
-  height: 52,
-  borderRadius: "50%",
-  background: "radial-gradient(circle at 40% 35%, #9fe, #4aa3ff)",
-  boxShadow: "0 0 12px #4aa3ff",
-  pointerEvents: "none",
+const dpadCenterStyle: React.CSSProperties = {
+  gridArea: "center",
+  width: 44,
+  height: 44,
+  background: "#121734",
+  border: "2px solid #1b2540",
+  borderRadius: 8,
 };
 
 const eatBtnStyle: React.CSSProperties = {
