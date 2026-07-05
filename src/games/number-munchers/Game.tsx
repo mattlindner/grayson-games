@@ -178,7 +178,7 @@ function CharacterFace({
   color,
   chewing,
   size,
-  mouthRatio = 0.58,
+  mouthRatio = 0.25,
 }: CharacterFaceProps) {
   const topH = size * mouthRatio;
   const botH = size - topH;
@@ -738,6 +738,7 @@ export default function Game({ character, onRestart, onHome }: GameProps) {
             color={info.color}
             chewing={chewRef.current}
             size={cellSize * 0.9}
+            mouthRatio={info.mouthRatio}
           />
         </div>
 
@@ -983,6 +984,6 @@ const eatBtnStyle: React.CSSProperties = {
 if (typeof document !== "undefined" && !document.getElementById("mm-chew-style")) {
   const style = document.createElement("style");
   style.id = "mm-chew-style";
-  style.textContent = `@keyframes mm-chew { 0%,100%{transform:rotateX(0deg)} 50%{transform:rotateX(58deg)} }`;
+  style.textContent = `@keyframes mm-chew { 0%,100%{transform:translateY(0)} 50%{transform:translateY(55%)} }`;
   document.head.appendChild(style);
 }

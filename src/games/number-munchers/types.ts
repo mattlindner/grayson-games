@@ -26,19 +26,31 @@ export type Character = "grayson" | "quinn";
 /** Visual + label metadata for each playable character. */
 export const CHARACTER_INFO: Record<
   Character,
-  { emoji: string; image: string; color: string; label: string }
+  {
+    emoji: string;
+    image: string;
+    color: string;
+    label: string;
+    /**
+     * Where the jaw splits, as a fraction of the face height (0 = top,
+     * 1 = bottom). Tune per photo so the split lands on the mouth.
+     */
+    mouthRatio: number;
+  }
 > = {
   grayson: {
     emoji: "🧒",
     image: `${import.meta.env.BASE_URL}grayson.png`,
     color: "#4aa3ff",
     label: "GRAYSON",
+    mouthRatio: 0.80,
   },
   quinn: {
     emoji: "👧",
     image: `${import.meta.env.BASE_URL}quinn.png`,
     color: "#c86bff",
     label: "QUINN",
+    mouthRatio: 0.85,
   },
 };
 
