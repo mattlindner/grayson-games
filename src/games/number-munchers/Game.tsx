@@ -533,7 +533,6 @@ export default function Game({ character, onRestart, onHome }: GameProps) {
   const levelIdx = levelRef.current;
   const instruction = LEVELS[levelIdx]?.instruction ?? "";
   const isMobile = isMobileRef.current;
-  const invulnActive = performance.now() < invulnRef.current;
 
   // Shrink the instruction so it always fits on a single line.
   const instrRef = useRef<HTMLSpanElement>(null);
@@ -675,7 +674,6 @@ export default function Game({ character, onRestart, onHome }: GameProps) {
             justifyContent: "center",
             transition: "top 0.08s linear, left 0.08s linear",
             pointerEvents: "none",
-            opacity: invulnActive ? 0.55 : 1,
             zIndex: 1,
           }}
         >
