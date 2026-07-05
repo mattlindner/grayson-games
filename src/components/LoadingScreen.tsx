@@ -52,7 +52,7 @@ export interface LoadingScreenProps {
   /** Large neon title (e.g. "GRAYSON"). */
   title: string;
   /** Smaller subtitle beneath the title (e.g. "SPACE BATTLE"). */
-  subtitle: string;
+  subtitle?: string;
   /** Characters offered in the post-load select prompt. */
   characters: LoadingCharacter[];
   /**

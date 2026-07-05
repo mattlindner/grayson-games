@@ -73,8 +73,7 @@ export default function NumberMunchers() {
     <div style={{ width: "100%", height: "100%", background: "#04140a" }}>
       {screen === "loading" && (
         <LoadingScreen
-          title="NUMBER"
-          subtitle="MUNCHERS"
+          title="NUMBER MUNCHERS"
           selectLabel="PICK YOUR MUNCHER"
           characters={CHARACTERS}
           messages={MESSAGES}

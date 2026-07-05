@@ -49,6 +49,9 @@ interface GameProps {
   onHome: () => void;
 }
 
+/** Image used for roaming enemies. */
+const ENEMY_IMAGE = `${import.meta.env.BASE_URL}enemy.png`;
+
 /** High-level game phase. */
 type Phase = "playing" | "levelclear" | "gameover" | "win";
 
@@ -693,13 +696,22 @@ export default function Game({ character, onRestart, onHome }: GameProps) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: cellSize * 0.6,
               transition: "top 0.15s linear, left 0.15s linear",
               pointerEvents: "none",
               zIndex: 3,
             }}
           >
-            👾
+            <img
+              src={ENEMY_IMAGE}
+              alt=""
+              draggable={false}
+              style={{
+                width: cellSize * 0.9,
+                height: cellSize * 0.9,
+                objectFit: "contain",
+                filter: "drop-shadow(0 0 6px #ff4d4d)",
+              }}
+            />
           </div>
         ))}
 
