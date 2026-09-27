@@ -124,8 +124,19 @@ export default function LoadingScreen({
   useEffect(() => {
     const measure = () => setTrackW(trackRef.current?.clientWidth ?? 0);
     measure();
+    // Re-measure after layout settles (iOS may report 0 on first paint).
+    const raf = requestAnimationFrame(measure);
+    const ro =
+      typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    if (ro && trackRef.current) ro.observe(trackRef.current);
     window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    window.addEventListener("orientationchange", measure);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro?.disconnect();
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("orientationchange", measure);
+    };
   }, []);
 
   /**
@@ -209,7 +220,10 @@ export default function LoadingScreen({
             <div
               style={{
                 ...barFillStyle,
-                width: `${(Math.max(0, Math.min(100, progress)) / 100) * trackW}px`,
+                width:
+                  trackW > 0
+                    ? `${(Math.max(0, Math.min(100, progress)) / 100) * trackW}px`
+                    : `${Math.max(0, Math.min(100, progress))}%`,
                 background: t.barGradient,
                 boxShadow: `0 0 10px ${t.glow}`,
               }}
@@ -333,7 +347,7 @@ const barBgStyle: React.CSSProperties = {
 /** Filled portion of the progress bar. */
 const barFillStyle: React.CSSProperties = {
   height: "100%",
-  transition: "width 0.05s linear",
+  willChange: "width",
 };
 
 /** Numeric percentage label centered above the bar. */
