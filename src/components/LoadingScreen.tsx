@@ -198,7 +198,7 @@ export default function LoadingScreen({
             <div
               style={{
                 ...barFillStyle,
-                transform: `scaleX(${Math.max(0, progress) / 100})`,
+                width: `${Math.max(0, progress)}%`,
                 background: t.barGradient,
                 boxShadow: `0 0 10px ${t.glow}`,
               }}
@@ -305,8 +305,6 @@ const subtitleStyle: React.CSSProperties = {
 
 /** Flex row containing the progress bar. */
 const barContainerStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
   margin: "0 auto",
   width: "100%",
   maxWidth: 360,
@@ -314,7 +312,7 @@ const barContainerStyle: React.CSSProperties = {
 
 /** Dark background track for the progress bar. */
 const barBgStyle: React.CSSProperties = {
-  flex: 1,
+  width: "100%",
   height: 20,
   background: "#111",
   borderRadius: 2,
@@ -324,9 +322,7 @@ const barBgStyle: React.CSSProperties = {
 /** Filled portion of the progress bar. */
 const barFillStyle: React.CSSProperties = {
   height: "100%",
-  width: "100%",
-  transformOrigin: "left center",
-  transition: "transform 0.05s linear",
+  transition: "width 0.05s linear",
 };
 
 /** Numeric percentage label centered above the bar. */
