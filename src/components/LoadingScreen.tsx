@@ -117,6 +117,17 @@ export default function LoadingScreen({
   const [statusText, setStatusText] = useState(messages[0]?.text ?? "LOADING...");
   const [loaded, setLoaded] = useState(false);
 
+  // Measured track width in pixels — iOS Safari fails to repaint a
+  // percentage-width fill inside overflow:hidden, so we size it in px.
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [trackW, setTrackW] = useState(0);
+  useEffect(() => {
+    const measure = () => setTrackW(trackRef.current?.clientWidth ?? 0);
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
   /**
    * Random loading duration in milliseconds, computed once and stored in
    * a ref so it persists across re-renders.
@@ -194,11 +205,11 @@ export default function LoadingScreen({
 
         {/* Loading bar */}
         <div style={barContainerStyle}>
-          <div style={{ ...barBgStyle, border: `2px solid ${t.accent}` }}>
+          <div ref={trackRef} style={{ ...barBgStyle, border: `2px solid ${t.accent}` }}>
             <div
               style={{
                 ...barFillStyle,
-                width: `${Math.max(0, progress)}%`,
+                width: `${(Math.max(0, Math.min(100, progress)) / 100) * trackW}px`,
                 background: t.barGradient,
                 boxShadow: `0 0 10px ${t.glow}`,
               }}
