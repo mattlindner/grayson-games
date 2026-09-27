@@ -342,6 +342,7 @@ export default function Game({ onRestart, onHome, character }: GameProps) {
   const stateRef = useRef<GameState | null>(null);
   const keysRef = useRef<Set<string>>(new Set());
   const fireRef = useRef(false);
+  const fireBtnRef = useRef<HTMLButtonElement>(null);
   const frameRef = useRef(0);
   const rafRef = useRef<number>(0);
   const enemyImgsRef = useRef<(HTMLImageElement | null)[]>([]);
@@ -706,32 +707,54 @@ export default function Game({ onRestart, onHome, character }: GameProps) {
   const onCanvasMouseUp = () => {
     fireRef.current = false;
   };
-  const onCanvasTouchStart = (e: React.TouchEvent) => {
-    e.preventDefault();
-    initAudio();
-    // Use touches on the canvas only, so a held FIRE button elsewhere doesn't hijack aim.
-    const t = e.targetTouches[0] ?? e.changedTouches[0];
-    if (t) aimAt(t.clientX, t.clientY);
-  };
-  const onCanvasTouchMove = (e: React.TouchEvent) => {
-    e.preventDefault();
-    const t = e.targetTouches[0] ?? e.changedTouches[0];
-    if (t) aimAt(t.clientX, t.clientY);
-  };
 
-  // ─ Mobile FIRE button ─
-  const onFireStart = (e: React.TouchEvent | React.MouseEvent) => {
+  // ─ Unified multi-touch handling ─
+  // iOS dispatches every finger to the element the FIRST finger landed on,
+  // so per-element touch handlers can't reliably separate aim from fire.
+  // Instead, classify all active touches by screen region here.
+  const handleTouches = (e: React.TouchEvent) => {
     e.preventDefault();
     initAudio();
-    fireRef.current = true;
-  };
-  const onFireEnd = (e: React.TouchEvent | React.MouseEvent) => {
-    e.preventDefault();
-    fireRef.current = false;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const cRect = canvas.getBoundingClientRect();
+    const fRect = fireBtnRef.current?.getBoundingClientRect();
+
+    let firing = false;
+    let aimX: number | null = null;
+    let aimY: number | null = null;
+    for (let i = 0; i < e.touches.length; i++) {
+      const t = e.touches[i];
+      const overFire =
+        !!fRect &&
+        t.clientX >= fRect.left &&
+        t.clientX <= fRect.right &&
+        t.clientY >= fRect.top &&
+        t.clientY <= fRect.bottom;
+      if (overFire) {
+        firing = true;
+        continue;
+      }
+      if (
+        t.clientX >= cRect.left &&
+        t.clientX <= cRect.right &&
+        t.clientY >= cRect.top &&
+        t.clientY <= cRect.bottom
+      ) {
+        aimX = t.clientX;
+        aimY = t.clientY;
+      }
+    }
+    fireRef.current = firing;
+    if (aimX !== null && aimY !== null) aimAt(aimX, aimY);
   };
 
   return (
     <div
+      onTouchStart={handleTouches}
+      onTouchMove={handleTouches}
+      onTouchEnd={handleTouches}
+      onTouchCancel={handleTouches}
       style={{
         position: "relative",
         height: "100%",
@@ -750,8 +773,6 @@ export default function Game({ onRestart, onHome, character }: GameProps) {
         onMouseDown={onCanvasMouseDown}
         onMouseUp={onCanvasMouseUp}
         onMouseLeave={onCanvasMouseUp}
-        onTouchStart={onCanvasTouchStart}
-        onTouchMove={onCanvasTouchMove}
         style={{
           display: "block",
           width: dims.w,
@@ -801,11 +822,20 @@ export default function Game({ onRestart, onHome, character }: GameProps) {
           }}
         >
           <button
-            onTouchStart={onFireStart}
-            onTouchEnd={onFireEnd}
-            onMouseDown={onFireStart}
-            onMouseUp={onFireEnd}
-            onMouseLeave={onFireEnd}
+            ref={fireBtnRef}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              initAudio();
+              fireRef.current = true;
+            }}
+            onMouseUp={(e) => {
+              e.preventDefault();
+              fireRef.current = false;
+            }}
+            onMouseLeave={(e) => {
+              e.preventDefault();
+              fireRef.current = false;
+            }}
             style={fireBtnStyle}
           >
             FIRE
