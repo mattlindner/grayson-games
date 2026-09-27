@@ -709,12 +709,13 @@ export default function Game({ onRestart, onHome, character }: GameProps) {
   const onCanvasTouchStart = (e: React.TouchEvent) => {
     e.preventDefault();
     initAudio();
-    const t = e.touches[0];
+    // Use touches on the canvas only, so a held FIRE button elsewhere doesn't hijack aim.
+    const t = e.targetTouches[0] ?? e.changedTouches[0];
     if (t) aimAt(t.clientX, t.clientY);
   };
   const onCanvasTouchMove = (e: React.TouchEvent) => {
     e.preventDefault();
-    const t = e.touches[0];
+    const t = e.targetTouches[0] ?? e.changedTouches[0];
     if (t) aimAt(t.clientX, t.clientY);
   };
 
