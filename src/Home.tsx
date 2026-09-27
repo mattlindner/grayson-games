@@ -27,6 +27,12 @@ const GAMES: GameEntry[] = [
     route: "/number-munchers",
     color: "#2fbf2f",
   },
+  {
+    label: "OCTOPUS CANNON",
+    icon: "🐙",
+    route: "/octopus-cannon",
+    color: "#a040d0",
+  },
 ];
 
 /** Draws the scrolling hill / sky background onto a canvas. */
