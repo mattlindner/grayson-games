@@ -48,6 +48,7 @@ const MAX_HEARTS = 3;
 const ENEMY_SRCS = [
   `${import.meta.env.BASE_URL}enemy.png`,
   `${import.meta.env.BASE_URL}enemy2.png`,
+  `${import.meta.env.BASE_URL}enemy3.png`,
 ];
 /** Number of background bubbles. */
 const BUBBLE_COUNT = 50;
