@@ -44,7 +44,7 @@ const THEME = {
   background: "#031428",
   accent: "#33d6ff",
   accentDim: "#1f8fbf",
-  barGradient: "linear-gradient(90deg, #33d6ff, #9af0ff)",
+  barGradient: "linear-gradient(90deg, #05314f, #33d6ff)",
   glow: "#33d6ff",
 };
 

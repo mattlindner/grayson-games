@@ -117,28 +117,6 @@ export default function LoadingScreen({
   const [statusText, setStatusText] = useState(messages[0]?.text ?? "LOADING...");
   const [loaded, setLoaded] = useState(false);
 
-  // Measured track width in pixels — iOS Safari fails to repaint a
-  // percentage-width fill inside overflow:hidden, so we size it in px.
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [trackW, setTrackW] = useState(0);
-  useEffect(() => {
-    const measure = () => setTrackW(trackRef.current?.clientWidth ?? 0);
-    measure();
-    // Re-measure after layout settles (iOS may report 0 on first paint).
-    const raf = requestAnimationFrame(measure);
-    const ro =
-      typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
-    if (ro && trackRef.current) ro.observe(trackRef.current);
-    window.addEventListener("resize", measure);
-    window.addEventListener("orientationchange", measure);
-    return () => {
-      cancelAnimationFrame(raf);
-      ro?.disconnect();
-      window.removeEventListener("resize", measure);
-      window.removeEventListener("orientationchange", measure);
-    };
-  }, []);
-
   /**
    * Random loading duration in milliseconds, computed once and stored in
    * a ref so it persists across re-renders.
@@ -216,14 +194,11 @@ export default function LoadingScreen({
 
         {/* Loading bar */}
         <div style={barContainerStyle}>
-          <div ref={trackRef} style={{ ...barBgStyle, border: `2px solid ${t.accent}` }}>
+          <div style={{ ...barBgStyle, border: `2px solid ${t.accent}` }}>
             <div
               style={{
                 ...barFillStyle,
-                width:
-                  trackW > 0
-                    ? `${(Math.max(0, Math.min(100, progress)) / 100) * trackW}px`
-                    : `${Math.max(0, Math.min(100, progress))}%`,
+                width: `${Math.max(0, progress)}%`,
                 background: t.barGradient,
                 boxShadow: `0 0 10px ${t.glow}`,
               }}
@@ -330,14 +305,15 @@ const subtitleStyle: React.CSSProperties = {
 
 /** Flex row containing the progress bar. */
 const barContainerStyle: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
   margin: "0 auto",
-  width: "100%",
   maxWidth: 360,
 };
 
 /** Dark background track for the progress bar. */
 const barBgStyle: React.CSSProperties = {
-  width: "100%",
+  flex: 1,
   height: 20,
   background: "#111",
   borderRadius: 2,
@@ -347,7 +323,7 @@ const barBgStyle: React.CSSProperties = {
 /** Filled portion of the progress bar. */
 const barFillStyle: React.CSSProperties = {
   height: "100%",
-  willChange: "width",
+  transition: "width 0.05s linear",
 };
 
 /** Numeric percentage label centered above the bar. */
